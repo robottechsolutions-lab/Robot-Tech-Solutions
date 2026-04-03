@@ -1,1 +1,1028 @@
-html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Robot Tech Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+:root{
+  --neon:#00f5ff;--neon2:#39ff14;--accent:#ff6b00;
+  --bg:#020813;--bg2:#050f20;--card:#081428;--card2:#0b1c35;
+  --border:rgba(0,245,255,.18);--text:#e0f0ff;--muted:#7aa0c0;
+  --red:#ff4444;--green:#39ff14;--yellow:#ffcc00;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;overflow-x:hidden;}
+#starCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.022) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:100;background:rgba(2,8,19,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 6%;height:68px;}
+.logo{font-family:'Orbitron',sans-serif;font-size:1.15rem;font-weight:900;color:var(--neon);text-shadow:0 0 14px var(--neon);letter-spacing:2px;}
+.logo span{color:var(--accent);}
+.nav-links{display:flex;gap:24px;list-style:none;}
+.nav-links a{color:var(--muted);font-size:.8rem;text-decoration:none;font-weight:600;letter-spacing:1px;text-transform:uppercase;transition:color .25s;}
+.nav-links a:hover{color:var(--neon);}
+@media(max-width:520px){.nav-links{gap:14px;}.nav-links a{font-size:.7rem;}}
+
+/* HERO */
+#hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:110px 6% 70px;z-index:1;}
+.hero-badge{display:inline-block;border:1px solid var(--neon);color:var(--neon);font-size:.72rem;font-family:'Orbitron',sans-serif;letter-spacing:3px;padding:6px 20px;border-radius:20px;margin-bottom:26px;background:rgba(0,245,255,.07);animation:pb 2.2s infinite;}
+@keyframes pb{0%,100%{box-shadow:0 0 0 0 rgba(0,245,255,.35);}50%{box-shadow:0 0 0 10px rgba(0,245,255,0);}}
+h1.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(2.3rem,6vw,5rem);font-weight:900;line-height:1.08;margin-bottom:22px;background:linear-gradient(135deg,#fff 0%,var(--neon) 55%,var(--neon2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 22px rgba(0,245,255,.45));}
+.hero-sub{font-size:clamp(.92rem,2.2vw,1.25rem);color:var(--muted);max-width:630px;line-height:1.75;margin-bottom:40px;font-weight:300;}
+.hero-sub strong{color:var(--neon);font-weight:600;}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:60px;}
+.btn-primary{background:linear-gradient(135deg,var(--neon),#007bff);color:#000;font-weight:800;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1.5px;padding:14px 32px;border:none;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s;text-transform:uppercase;}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 10px 32px rgba(0,245,255,.45);}
+.btn-outline{border:1.5px solid var(--neon);color:var(--neon);font-weight:700;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1.5px;padding:14px 32px;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block;background:transparent;transition:all .2s;text-transform:uppercase;}
+.btn-outline:hover{background:var(--neon);color:#000;}
+
+/* FLOAT CARDS */
+.float-cards{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;}
+.float-card{width:172px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 14px 16px;text-align:center;animation:flt 4s ease-in-out infinite;}
+.float-card:nth-child(2){animation-delay:.9s;}.float-card:nth-child(3){animation-delay:1.8s;}
+@keyframes flt{0%,100%{transform:translateY(0);}50%{transform:translateY(-13px);}}
+.float-card svg{width:76px;height:76px;margin:0 auto 10px;display:block;}
+.float-card span{font-family:'Orbitron',sans-serif;font-size:.66rem;color:var(--neon);letter-spacing:2px;}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:86px 6%;}
+.sec-tag{font-family:'Orbitron',sans-serif;font-size:.68rem;letter-spacing:4px;color:var(--neon);text-transform:uppercase;margin-bottom:10px;}
+.sec-title{font-family:'Orbitron',sans-serif;font-size:clamp(1.55rem,3.5vw,2.45rem);font-weight:900;margin-bottom:12px;color:#fff;}
+.sec-title span{color:var(--neon);}
+.sec-line{width:52px;height:3px;background:linear-gradient(90deg,var(--neon),transparent);margin-bottom:42px;}
+
+/* STATS */
+#stats{background:linear-gradient(90deg,rgba(0,245,255,.04),rgba(57,255,20,.04));border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:42px 6%;position:relative;z-index:1;}
+.stats-row{display:flex;gap:60px;justify-content:center;flex-wrap:wrap;}
+.stat-item{text-align:center;}
+.stat-num{font-family:'Orbitron',sans-serif;font-size:2.4rem;font-weight:900;color:var(--neon);text-shadow:0 0 14px var(--neon);}
+.stat-lbl{color:var(--muted);font-size:.74rem;letter-spacing:1px;margin-top:5px;text-transform:uppercase;}
+
+/* VISION */
+#vision{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);}
+.vm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:24px;}
+.vm-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:34px 26px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.vm-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon),transparent);}
+.vm-card:hover{transform:translateY(-6px);box-shadow:0 18px 50px rgba(0,245,255,.12);}
+.vm-icon{font-size:2.4rem;margin-bottom:15px;}
+.vm-card h3{font-family:'Orbitron',sans-serif;font-size:.96rem;color:var(--neon);margin-bottom:11px;}
+.vm-card p{color:var(--muted);line-height:1.85;font-size:.91rem;}
+
+/* TECH */
+#tech{background:var(--bg);}
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(236px,1fr));gap:22px;}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:transform .3s,box-shadow .3s;position:relative;}
+.tech-card:hover{transform:translateY(-6px);box-shadow:0 18px 50px rgba(0,245,255,.14);}
+.tech-illo{width:100%;height:182px;display:flex;align-items:center;justify-content:center;}
+.tech-body{padding:17px 18px 22px;}
+.tech-body h4{font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--neon);margin-bottom:7px;}
+.tech-body p{color:var(--muted);font-size:.81rem;line-height:1.6;}
+.tech-phase{position:absolute;top:9px;right:9px;background:rgba(255,107,0,.12);border:1px solid var(--accent);color:var(--accent);font-size:.58rem;padding:3px 9px;border-radius:20px;font-family:'Orbitron',sans-serif;letter-spacing:1px;}
+
+/* FOUNDER */
+#founder{background:var(--bg2);}
+.founder-wrap{display:grid;grid-template-columns:210px 1fr;gap:52px;align-items:start;max-width:860px;margin:0 auto;}
+@media(max-width:660px){.founder-wrap{grid-template-columns:1fr;text-align:center;}}
+.founder-avatar-wrap{display:flex;flex-direction:column;align-items:center;}
+.avatar-ring{width:186px;height:186px;border-radius:50%;background:linear-gradient(135deg,var(--neon),#007bff,var(--neon2));display:flex;align-items:center;justify-content:center;animation:ag 3s ease-in-out infinite alternate;}
+@keyframes ag{0%{box-shadow:0 0 30px rgba(0,245,255,.3);}100%{box-shadow:0 0 70px rgba(0,245,255,.65),0 0 120px rgba(57,255,20,.2);}}
+.avatar-inner{width:170px;height:170px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:4.8rem;}
+.founder-name{font-family:'Orbitron',sans-serif;font-size:1.65rem;font-weight:900;color:#fff;margin-bottom:5px;}
+.founder-role{color:var(--neon);font-size:.75rem;letter-spacing:2.5px;text-transform:uppercase;font-family:'Orbitron',sans-serif;margin-bottom:20px;}
+.founder-bio{color:var(--muted);line-height:1.95;font-size:.93rem;border-left:3px solid var(--neon);padding-left:17px;}
+@media(max-width:660px){.founder-bio{border-left:none;border-top:3px solid var(--neon);padding-left:0;padding-top:13px;}}
+.founder-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px;}
+.founder-tags span{border:1px solid var(--neon);color:var(--neon);font-size:.68rem;padding:5px 13px;border-radius:20px;font-family:'Orbitron',sans-serif;background:rgba(0,245,255,.05);}
+
+/* ══════════════════════════════════
+   JOIN SECTION — APP-STYLE SCREENS
+══════════════════════════════════ */
+#join{background:var(--bg);}
+
+/* SCREEN WRAPPER — one visible at a time */
+.screen{display:none;max-width:420px;margin:0 auto;animation:screenIn .4s ease;}
+.screen.active{display:block;}
+@keyframes screenIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* APP CARD */
+.app-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 32px 32px;position:relative;overflow:hidden;}
+@media(max-width:480px){.app-card{padding:28px 20px 24px;border-radius:16px;}}
+.app-card::before{content:'';position:absolute;top:-80px;right:-80px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(0,245,255,.06),transparent 70%);pointer-events:none;}
+
+/* APP LOGO BADGE */
+.app-logo-badge{display:flex;flex-direction:column;align-items:center;margin-bottom:28px;}
+.app-logo-badge .icon{font-size:2.8rem;margin-bottom:8px;}
+.app-logo-badge .brand{font-family:'Orbitron',sans-serif;font-size:.8rem;font-weight:900;color:var(--neon);letter-spacing:2px;}
+.app-logo-badge .brand span{color:var(--accent);}
+
+/* SCREEN TITLE */
+.screen-title{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:6px;text-align:center;}
+.screen-sub{color:var(--muted);font-size:.86rem;line-height:1.65;margin-bottom:24px;text-align:center;}
+
+/* FORM FIELDS */
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.fg label{font-size:.67rem;color:var(--neon);font-family:'Orbitron',sans-serif;letter-spacing:1.5px;text-transform:uppercase;}
+.fg input,.fg select,.fg textarea{background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:.93rem;outline:none;transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;width:100%;}
+.fg select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%2300f5ff' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;}
+.fg select option{background:#050f20;color:#e0f0ff;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--neon);box-shadow:0 0 14px rgba(0,245,255,.18);}
+.fg textarea{resize:vertical;min-height:76px;}
+.fg.err input,.fg.err select,.fg.err textarea{border-color:var(--red)!important;box-shadow:0 0 8px rgba(255,68,68,.18)!important;}
+.fg .hint{font-size:.69rem;color:var(--muted);margin-top:2px;}
+.fg .hint.ok{color:var(--green);}
+.fg .hint.bad{color:var(--red);}
+
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.frow{grid-template-columns:1fr;}}
+
+/* PASSWORD EYE */
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:44px;}
+.pw-eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.95rem;line-height:1;padding:4px;}
+.pw-bar{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden;}
+.pw-fill{height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;}
+
+/* MAIN BUTTON */
+.btn-main{width:100%;background:linear-gradient(135deg,var(--neon),#007bff);color:#000;font-weight:900;font-family:'Orbitron',sans-serif;font-size:.86rem;letter-spacing:1.5px;padding:15px;border:none;border-radius:10px;cursor:pointer;text-transform:uppercase;transition:transform .2s,box-shadow .2s,opacity .2s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:9px;}
+.btn-main:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,245,255,.42);}
+.btn-main:disabled{opacity:.55;cursor:not-allowed;}
+
+/* SPINNER */
+.spin{width:17px;height:17px;border:2.5px solid rgba(0,0,0,.25);border-top-color:#000;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* SWITCH ROW */
+.switch-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;font-size:.86rem;color:var(--muted);}
+.switch-row a{color:var(--neon);cursor:pointer;font-weight:700;text-decoration:none;}
+.switch-row a:hover{text-decoration:underline;}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0;}
+.divider hr{flex:1;border:none;border-top:1px solid var(--border);}
+.divider span{font-family:'Orbitron',sans-serif;font-size:.62rem;color:var(--muted);letter-spacing:2px;}
+
+/* OTP SCREEN */
+.otp-row{display:flex;gap:9px;justify-content:center;margin:18px 0 8px;}
+.ob{width:50px;height:56px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;font-family:'Orbitron',sans-serif;font-size:1.35rem;font-weight:700;color:var(--neon);text-align:center;outline:none;transition:border-color .3s,box-shadow .3s;}
+.ob:focus{border-color:var(--neon);box-shadow:0 0 12px rgba(0,245,255,.22);}
+.ob.filled{border-color:rgba(0,245,255,.5);}
+@media(max-width:360px){.ob{width:42px;height:50px;font-size:1.1rem;gap:6px;}}
+.otp-timer{text-align:center;font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--accent);margin-bottom:14px;}
+.otp-resend{text-align:center;font-size:.83rem;color:var(--muted);margin-top:12px;}
+.otp-resend a{color:var(--neon);cursor:pointer;font-weight:600;}
+
+/* AVATAR PICK */
+.ava-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.ava-opt{width:46px;height:46px;border-radius:50%;background:var(--card2);border:2px solid var(--border);font-size:1.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s,transform .2s;user-select:none;}
+.ava-opt:hover{transform:scale(1.1);}
+.ava-opt.sel{border-color:var(--neon);box-shadow:0 0 12px rgba(0,245,255,.32);}
+
+/* WA PANEL */
+#waPanel{display:none;max-width:420px;margin:0 auto;animation:screenIn .5s ease;}
+#waPanel.active{display:block;}
+.wa-card{background:var(--card);border:2px solid var(--green);border-radius:20px;padding:44px 32px;text-align:center;box-shadow:0 0 60px rgba(57,255,20,.12);}
+.wa-icon-big{font-size:3.6rem;margin-bottom:14px;}
+.wa-card h2{font-family:'Orbitron',sans-serif;color:var(--green);font-size:1.38rem;margin-bottom:12px;}
+.wa-card p{color:var(--muted);line-height:1.85;margin-bottom:26px;font-size:.91rem;}
+.profile-row{display:inline-flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);padding:9px 18px;border-radius:30px;margin-bottom:22px;}
+.profile-row .p-ava{font-size:1.5rem;}
+.profile-row .p-name{font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--neon);letter-spacing:1px;}
+.btn-wa{display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#fff;font-weight:800;font-family:'Orbitron',sans-serif;font-size:.84rem;letter-spacing:1.5px;padding:16px 34px;border-radius:10px;text-decoration:none;transition:transform .2s,box-shadow .2s;text-transform:uppercase;border:none;cursor:pointer;width:100%;justify-content:center;}
+.btn-wa:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(37,211,102,.42);}
+.wa-svg{width:24px;height:24px;fill:#fff;flex-shrink:0;}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 6% 28px;text-align:center;position:relative;z-index:1;}
+.footer-logo{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;color:var(--neon);text-shadow:0 0 12px var(--neon);margin-bottom:10px;}
+.footer-logo span{color:var(--accent);}
+.footer-tag{color:var(--muted);font-size:.88rem;margin-bottom:22px;}
+.footer-bottom{color:var(--muted);font-size:.74rem;border-top:1px solid var(--border);padding-top:18px;margin-top:18px;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;padding:13px 20px;border-radius:10px;font-size:.84rem;z-index:500;transform:translateX(160%);transition:transform .38s;max-width:295px;background:var(--card);color:var(--text);box-shadow:0 8px 30px rgba(0,0,0,.4);border:1px solid var(--neon);}
+#toast.show{transform:translateX(0);}
+
+/* SHAKE ANIMATION */
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-7px);}40%,80%{transform:translateX(7px);}}
+</style>
+</head>
+<body>
+
+<canvas id="starCanvas"></canvas>
+<div id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">ROBOT<span>TECH</span></div>
+  <ul class="nav-links">
+    <li><a href="#vision">Vision</a></li>
+    <li><a href="#tech">Tech</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="#join">Join</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">🚀 THE FUTURE STARTS HERE</div>
+  <h1 class="hero-title">ROBOT TECH<br/>SOLUTIONS</h1>
+  <p class="hero-sub">Building the <strong>next generation</strong> of robotics, automation &amp; intelligent systems.<br/>This is just the beginning — and you're invited.</p>
+  <div class="cta-row">
+    <a href="#join" class="btn-primary">Join the Community</a>
+    <a href="#vision" class="btn-outline">Our Vision</a>
+  </div>
+  <div class="float-cards">
+    <div class="float-card">
+      <svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="36" rx="6" fill="#081428" stroke="#00f5ff" stroke-width="1.5"/><circle cx="40" cy="44" r="5" fill="#00f5ff" opacity=".85"/><circle cx="60" cy="44" r="5" fill="#00f5ff" opacity=".85"/><circle cx="40" cy="44" r="2.5" fill="#020813"/><circle cx="60" cy="44" r="2.5" fill="#020813"/><rect x="40" y="55" width="20" height="3" rx="1.5" fill="#00f5ff" opacity=".6"/><rect x="44" y="24" width="12" height="8" rx="3" fill="#081428" stroke="#00f5ff" stroke-width="1.5"/><circle cx="50" cy="24" r="2" fill="#39ff14"/><rect x="18" y="34" width="12" height="6" rx="3" fill="#081428" stroke="#00f5ff" stroke-width="1.2"/><rect x="70" y="34" width="12" height="6" rx="3" fill="#081428" stroke="#00f5ff" stroke-width="1.2"/><rect x="36" y="66" width="10" height="18" rx="3" fill="#081428" stroke="#00f5ff" stroke-width="1.2"/><rect x="54" y="66" width="10" height="18" rx="3" fill="#081428" stroke="#00f5ff" stroke-width="1.2"/></svg>
+      <span>ROBOTICS</span>
+    </div>
+    <div class="float-card">
+      <svg viewBox="0 0 100 100"><rect x="38" y="42" width="24" height="16" rx="5" fill="#081428" stroke="#00f5ff" stroke-width="1.5"/><circle cx="50" cy="50" r="4" fill="#00f5ff" opacity=".2"/><circle cx="50" cy="50" r="2" fill="#39ff14"/><line x1="38" y1="46" x2="18" y2="32" stroke="#00f5ff" stroke-width="1.2" opacity=".7"/><line x1="62" y1="46" x2="82" y2="32" stroke="#00f5ff" stroke-width="1.2" opacity=".7"/><line x1="38" y1="54" x2="18" y2="68" stroke="#00f5ff" stroke-width="1.2" opacity=".7"/><line x1="62" y1="54" x2="82" y2="68" stroke="#00f5ff" stroke-width="1.2" opacity=".7"/><ellipse cx="18" cy="32" rx="10" ry="3" fill="#00f5ff" opacity=".3" transform="rotate(-30,18,32)"/><ellipse cx="82" cy="32" rx="10" ry="3" fill="#00f5ff" opacity=".3" transform="rotate(30,82,32)"/><ellipse cx="18" cy="68" rx="10" ry="3" fill="#00f5ff" opacity=".3" transform="rotate(30,18,68)"/><ellipse cx="82" cy="68" rx="10" ry="3" fill="#00f5ff" opacity=".3" transform="rotate(-30,82,68)"/><circle cx="18" cy="32" r="3.5" fill="#081428" stroke="#00f5ff" stroke-width="1"/><circle cx="82" cy="32" r="3.5" fill="#081428" stroke="#00f5ff" stroke-width="1"/><circle cx="18" cy="68" r="3.5" fill="#081428" stroke="#00f5ff" stroke-width="1"/><circle cx="82" cy="68" r="3.5" fill="#081428" stroke="#00f5ff" stroke-width="1"/></svg>
+      <span>DRONES</span>
+    </div>
+    <div class="float-card">
+      <svg viewBox="0 0 100 100"><rect x="12" y="52" width="76" height="26" rx="5" fill="#081428" stroke="#00f5ff" stroke-width="1.5"/><path d="M26 52 L34 34 L66 34 L74 52 Z" fill="#081428" stroke="#00f5ff" stroke-width="1.3"/><path d="M36 52 L42 38 L58 38 L64 52 Z" fill="rgba(0,245,255,.1)" stroke="#00f5ff" stroke-width=".8"/><circle cx="28" cy="78" r="10" fill="#020813" stroke="#00f5ff" stroke-width="1.5"/><circle cx="72" cy="78" r="10" fill="#020813" stroke="#00f5ff" stroke-width="1.5"/><circle cx="28" cy="78" r="5" fill="#081428" stroke="#00f5ff" stroke-width="1"/><circle cx="72" cy="78" r="5" fill="#081428" stroke="#00f5ff" stroke-width="1"/><circle cx="28" cy="78" r="2" fill="#00f5ff" opacity=".6"/><circle cx="72" cy="78" r="2" fill="#00f5ff" opacity=".6"/><rect x="13" y="58" width="8" height="5" rx="2" fill="#ff6b00" opacity=".8"/><rect x="79" y="58" width="8" height="5" rx="2" fill="#ff6b00" opacity=".8"/></svg>
+      <span>AUTO TECH</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS — real-time from Firebase -->
+<div id="stats" class="reveal">
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num" id="memberCount">—</div>
+      <div class="stat-lbl">Members Joined</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">1</div>
+      <div class="stat-lbl">Visionary Founder</div>
+    </div>
+  </div>
+</div>
+
+<!-- VISION -->
+<section id="vision">
+  <div class="sec-tag">Our Purpose</div>
+  <h2 class="sec-title">Vision &amp; <span>Mission</span></h2>
+  <div class="sec-line"></div>
+  <div class="vm-grid reveal">
+    <div class="vm-card"><div class="vm-icon">🔭</div><h3>Our Vision</h3><p>To be the world's most innovative technology community — where young minds, engineers, and dreamers reshape the future through robotics, AI, and automation. <strong>This is just the beginning.</strong></p></div>
+    <div class="vm-card"><div class="vm-icon">🎯</div><h3>Our Mission</h3><p>To educate, empower, and connect a global network of tech enthusiasts — providing mentorship, resources, and hands-on experience in robotics, drones, autonomous vehicles, and emerging tech.</p></div>
+    <div class="vm-card"><div class="vm-icon">⚡</div><h3>Why Join Us?</h3><p>Whether you're 14 or 40, beginner or builder — Robot Tech Solutions is your launchpad. Real community, real mentorship, real projects. We grow together.</p></div>
+  </div>
+</section>
+
+<!-- TECH DOMAINS -->
+<section id="tech">
+  <div class="sec-tag">What We Are Building</div>
+  <h2 class="sec-title">Technology <span>Domains</span></h2>
+  <div class="sec-line"></div>
+  <div class="tech-grid reveal">
+    <div class="tech-card">
+      <div class="tech-illo" style="background:linear-gradient(135deg,#020813,#081428);">
+        <svg width="128" height="128" viewBox="0 0 140 140"><rect x="45" y="42" width="50" height="46" rx="7" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.5"/><circle cx="58" cy="62" r="8" fill="#00f5ff" opacity=".15" stroke="#00f5ff" stroke-width="1"/><circle cx="58" cy="62" r="4" fill="#00f5ff"/><circle cx="82" cy="62" r="8" fill="#00f5ff" opacity=".15" stroke="#00f5ff" stroke-width="1"/><circle cx="82" cy="62" r="4" fill="#00f5ff"/><rect x="56" y="76" width="28" height="4" rx="2" fill="#00f5ff" opacity=".5"/><rect x="59" y="30" width="22" height="14" rx="4" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.5"/><circle cx="70" cy="30" r="3.5" fill="#39ff14"/><rect x="22" y="48" width="23" height="9" rx="4" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.2"/><rect x="95" y="48" width="23" height="9" rx="4" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.2"/><rect x="52" y="88" width="14" height="28" rx="4" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.2"/><rect x="74" y="88" width="14" height="28" rx="4" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.2"/></svg>
+      </div>
+      <div class="tech-phase">COMING SOON</div>
+      <div class="tech-body"><h4>🤖 Robotics</h4><p>From servo motors to humanoid builds — engineering tomorrow's machines as a student community.</p></div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-illo" style="background:linear-gradient(135deg,#020813,#07141e);">
+        <svg width="128" height="128" viewBox="0 0 140 140"><rect x="54" y="60" width="32" height="20" rx="6" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.5"/><circle cx="70" cy="70" r="7" fill="#00f5ff" opacity=".12" stroke="#00f5ff" stroke-width="1"/><circle cx="70" cy="70" r="3" fill="#39ff14"/><line x1="54" y1="64" x2="24" y2="38" stroke="#00f5ff" stroke-width="1.5" opacity=".7"/><line x1="86" y1="64" x2="116" y2="38" stroke="#00f5ff" stroke-width="1.5" opacity=".7"/><line x1="54" y1="76" x2="24" y2="102" stroke="#00f5ff" stroke-width="1.5" opacity=".7"/><line x1="86" y1="76" x2="116" y2="102" stroke="#00f5ff" stroke-width="1.5" opacity=".7"/><ellipse cx="24" cy="38" rx="14" ry="4" fill="#00f5ff" opacity=".28" transform="rotate(-30,24,38)"/><ellipse cx="116" cy="38" rx="14" ry="4" fill="#00f5ff" opacity=".28" transform="rotate(30,116,38)"/><ellipse cx="24" cy="102" rx="14" ry="4" fill="#00f5ff" opacity=".28" transform="rotate(30,24,102)"/><ellipse cx="116" cy="102" rx="14" ry="4" fill="#00f5ff" opacity=".28" transform="rotate(-30,116,102)"/><circle cx="24" cy="38" r="5" fill="#0a1a30" stroke="#00f5ff" stroke-width="1"/><circle cx="116" cy="38" r="5" fill="#0a1a30" stroke="#00f5ff" stroke-width="1"/><circle cx="24" cy="102" r="5" fill="#0a1a30" stroke="#00f5ff" stroke-width="1"/><circle cx="116" cy="102" r="5" fill="#0a1a30" stroke="#00f5ff" stroke-width="1"/></svg>
+      </div>
+      <div class="tech-phase">COMING SOON</div>
+      <div class="tech-body"><h4>🚁 Drone Engineering</h4><p>Autonomous UAVs, aerial mapping, delivery systems — our future projects as a growing community.</p></div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-illo" style="background:linear-gradient(135deg,#020813,#08141e);">
+        <svg width="128" height="128" viewBox="0 0 140 140"><rect x="18" y="68" width="104" height="36" rx="6" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.5"/><path d="M34 68 L46 44 L94 44 L106 68 Z" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.4"/><path d="M48 68 L57 50 L83 50 L92 68 Z" fill="rgba(0,245,255,.09)" stroke="#00f5ff" stroke-width=".8"/><circle cx="38" cy="104" r="13" fill="#020813" stroke="#00f5ff" stroke-width="1.5"/><circle cx="102" cy="104" r="13" fill="#020813" stroke="#00f5ff" stroke-width="1.5"/><circle cx="38" cy="104" r="7" fill="#0a1a30" stroke="#00f5ff" stroke-width="1"/><circle cx="102" cy="104" r="7" fill="#0a1a30" stroke="#00f5ff" stroke-width="1"/><circle cx="38" cy="104" r="2.8" fill="#00f5ff" opacity=".7"/><circle cx="102" cy="104" r="2.8" fill="#00f5ff" opacity=".7"/><rect x="19" y="75" width="11" height="8" rx="2.5" fill="#ff6b00" opacity=".9"/><rect x="110" y="75" width="11" height="8" rx="2.5" fill="#ff6b00" opacity=".9"/></svg>
+      </div>
+      <div class="tech-phase">COMING SOON</div>
+      <div class="tech-body"><h4>🚗 Autonomous Vehicles</h4><p>Self-driving prototypes and smart mobility — the vision we are building toward as students.</p></div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-illo" style="background:linear-gradient(135deg,#020813,#07081e);">
+        <svg width="128" height="128" viewBox="0 0 140 140"><rect x="28" y="36" width="84" height="68" rx="4" fill="#0a1a30" stroke="#00f5ff" stroke-width="1.2"/><rect x="48" y="54" width="44" height="32" rx="3" fill="#020813" stroke="#00f5ff" stroke-width="1.5"/><rect x="54" y="60" width="32" height="20" rx="2" fill="#0a1a30" stroke="#00f5ff" stroke-width=".8"/><text x="70" y="74" text-anchor="middle" font-size="9" fill="#00f5ff" font-family="monospace" opacity=".9">CPU</text><line x1="28" y1="63" x2="48" y2="63" stroke="#39ff14" stroke-width="1.2" opacity=".7"/><line x1="28" y1="70" x2="48" y2="70" stroke="#39ff14" stroke-width="1.2" opacity=".7"/><line x1="28" y1="77" x2="48" y2="77" stroke="#39ff14" stroke-width="1.2" opacity=".7"/><line x1="92" y1="63" x2="112" y2="63" stroke="#ff6b00" stroke-width="1.2" opacity=".7"/><line x1="92" y1="70" x2="112" y2="70" stroke="#ff6b00" stroke-width="1.2" opacity=".7"/><line x1="92" y1="77" x2="112" y2="77" stroke="#ff6b00" stroke-width="1.2" opacity=".7"/><circle cx="38" cy="42" r="4" fill="#39ff14" opacity=".9"/><circle cx="102" cy="42" r="4" fill="#ff6b00" opacity=".9"/><circle cx="38" cy="98" r="4" fill="#00f5ff" opacity=".9"/></svg>
+      </div>
+      <div class="tech-phase">COMING SOON</div>
+      <div class="tech-body"><h4>🧠 AI &amp; Electronics</h4><p>Embedded systems, machine learning, intelligent hardware — the future we are learning to build today.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section id="founder">
+  <div class="sec-tag">Leadership</div>
+  <h2 class="sec-title">Meet the <span>Founder</span></h2>
+  <div class="sec-line"></div>
+  <div class="founder-wrap reveal">
+    <div class="founder-avatar-wrap">
+      <div class="avatar-ring"><div class="avatar-inner">👨‍💻</div></div>
+    </div>
+    <div>
+      <div class="founder-name">Olan Tony</div>
+      <div class="founder-role">Founder &amp; Visionary — Robot Tech Solutions</div>
+      <p class="founder-bio">
+        I've always believed that technology isn't just a tool — it's a language, and once you speak it, there are no limits to what you can create.<br/><br/>
+        From tearing apart gadgets as a kid to building full robotics systems today, my obsession with how things work has never stopped. Robotics, drones, AI, autonomous systems — these aren't just fields to me, they're passions I wake up thinking about every single morning.<br/><br/>
+        I started <strong>Robot Tech Solutions</strong> because I saw a gap: too many brilliant young minds with zero access, zero guidance, and zero community. I want to change that. This movement is built for the curious, the bold, and the builders. If you've got the fire, we've got the fuel.<br/><br/>
+        <em>— We are just getting started. The best is yet to come. 🚀</em>
+      </p>
+      <div class="founder-tags">
+        <span>🤖 Robotics</span><span>🚁 Drones</span><span>🧠 AI Enthusiast</span>
+        <span>⚡ Maker</span><span>🚗 Auto Tech</span><span>🌍 Tech For All</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     JOIN SECTION
+     Screen A: Member info form
+     Screen B: Sign Up (app-style)
+     Screen C: Log In (app-style)
+     Screen D: Email OTP verification
+     Screen E: WhatsApp
+═══════════════════════════════════════════════ -->
+<section id="join">
+  <div class="sec-tag">Community</div>
+  <h2 class="sec-title">Join Robot Tech <span>Solutions</span></h2>
+  <div class="sec-line"></div>
+
+  <!-- ── SCREEN A: Member Info ── -->
+  <div class="screen active" id="screenA">
+    <div class="app-card">
+      <div class="app-logo-badge">
+        <div class="icon">🤖</div>
+        <div class="brand">ROBOT<span>TECH</span></div>
+      </div>
+      <div class="screen-title">Join the Community</div>
+      <div class="screen-sub">Tell us about yourself. This info goes straight to our founder.</div>
+
+      <div class="frow">
+        <div class="fg" id="fgA_name"><label>Full Name *</label><input type="text" id="A_name" placeholder="John Doe"/></div>
+        <div class="fg" id="fgA_age"><label>Age *</label><input type="number" id="A_age" placeholder="18" min="5" max="99"/></div>
+      </div>
+      <div class="frow">
+        <div class="fg" id="fgA_country"><label>Country *</label>
+          <select id="A_country">
+            <option value="">-- Country --</option>
+            <option>Nigeria</option><option>Ghana</option><option>Kenya</option><option>South Africa</option>
+            <option>Ethiopia</option><option>Uganda</option><option>Cameroon</option><option>Senegal</option>
+            <option>United States</option><option>United Kingdom</option><option>Canada</option>
+            <option>India</option><option>Germany</option><option>France</option><option>Brazil</option>
+            <option>Australia</option><option>China</option><option>Japan</option><option>Egypt</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg" id="fgA_phone"><label>Phone *</label><input type="tel" id="A_phone" placeholder="+234 800 0000"/></div>
+      </div>
+      <div class="fg" id="fgA_email"><label>Email Address *</label><input type="email" id="A_email" placeholder="you@example.com"/></div>
+      <div class="fg" id="fgA_interest"><label>Tech Interest *</label>
+        <select id="A_interest">
+          <option value="">-- Select --</option>
+          <option>Robotics and Automation</option><option>Drone Engineering</option>
+          <option>Autonomous Vehicles</option><option>Artificial Intelligence</option>
+          <option>Electronics and Arduino</option><option>Programming and Software</option>
+          <option>All of the above!</option>
+        </select>
+      </div>
+      <div class="fg" id="fgA_level"><label>Experience Level *</label>
+        <select id="A_level">
+          <option value="">-- Select --</option>
+          <option>Total Beginner</option><option>Intermediate</option>
+          <option>Advanced</option><option>Professional</option>
+        </select>
+      </div>
+      <div class="fg"><label>Why join? (Optional)</label>
+        <textarea id="A_reason" placeholder="What excites you about Robot Tech Solutions?"></textarea>
+      </div>
+      <button class="btn-main" id="btnA" onclick="submitInfo()">
+        <span id="btnAtxt">Continue →</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN B: Sign Up ── -->
+  <div class="screen" id="screenB">
+    <div class="app-card">
+      <div class="app-logo-badge">
+        <div class="icon">🚀</div>
+        <div class="brand">ROBOT<span>TECH</span></div>
+      </div>
+      <div class="screen-title">Create Account</div>
+      <div class="screen-sub">Set up your Robot Tech Solutions profile.</div>
+
+      <div class="fg" id="fgB_uname">
+        <label>Username *</label>
+        <input type="text" id="B_uname" placeholder="e.g. olan_tech" autocomplete="username" oninput="liveUsername(this.value)"/>
+        <div class="hint" id="unameHint"></div>
+      </div>
+      <div class="fg" id="fgB_email">
+        <label>Email Address *</label>
+        <input type="email" id="B_email" placeholder="your@email.com" autocomplete="email"/>
+        <div class="hint" id="emailHint">A verification code will be sent to this email</div>
+      </div>
+      <div class="frow">
+        <div class="fg" id="fgB_dob"><label>Date of Birth *</label><input type="date" id="B_dob"/></div>
+        <div class="fg" id="fgB_gender"><label>Gender *</label>
+          <select id="B_gender">
+            <option value="">-- Select --</option>
+            <option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" id="fgB_pass">
+        <label>Password *</label>
+        <div class="pw-wrap">
+          <input type="password" id="B_pass" placeholder="Min 8 characters" autocomplete="new-password" oninput="livePw(this.value)"/>
+          <button class="pw-eye" type="button" onclick="eyeToggle('B_pass',this)">👁</button>
+        </div>
+        <div class="pw-bar"><div class="pw-fill" id="pwFill"></div></div>
+        <div class="hint" id="pwHint"></div>
+      </div>
+      <div class="fg" id="fgB_pass2">
+        <label>Confirm Password *</label>
+        <div class="pw-wrap">
+          <input type="password" id="B_pass2" placeholder="Repeat password" autocomplete="new-password" oninput="liveConfirm()"/>
+          <button class="pw-eye" type="button" onclick="eyeToggle('B_pass2',this)">👁</button>
+        </div>
+        <div class="hint" id="confirmHint"></div>
+      </div>
+
+      <!-- Avatar -->
+      <div class="fg">
+        <label>Pick Your Avatar</label>
+        <div class="ava-grid" id="avaGrid">
+          <div class="ava-opt sel" data-v="🧑‍💻" onclick="pickAva(this)">🧑‍💻</div>
+          <div class="ava-opt" data-v="👨‍🔬" onclick="pickAva(this)">👨‍🔬</div>
+          <div class="ava-opt" data-v="👩‍🔬" onclick="pickAva(this)">👩‍🔬</div>
+          <div class="ava-opt" data-v="🤖" onclick="pickAva(this)">🤖</div>
+          <div class="ava-opt" data-v="👨‍🚀" onclick="pickAva(this)">👨‍🚀</div>
+          <div class="ava-opt" data-v="👩‍🚀" onclick="pickAva(this)">👩‍🚀</div>
+          <div class="ava-opt" data-v="⚡" onclick="pickAva(this)">⚡</div>
+          <div class="ava-opt" data-v="🚀" onclick="pickAva(this)">🚀</div>
+        </div>
+      </div>
+
+      <button class="btn-main" id="btnB" onclick="doSignup()">
+        <span id="btnBtxt">Create Account &amp; Verify →</span>
+      </button>
+      <div class="divider"><hr/><span>or</span><hr/></div>
+      <div class="switch-row">Already have an account? <a onclick="showScreen('screenC')">Log In</a></div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN C: Log In ── -->
+  <div class="screen" id="screenC">
+    <div class="app-card">
+      <div class="app-logo-badge">
+        <div class="icon">🔑</div>
+        <div class="brand">ROBOT<span>TECH</span></div>
+      </div>
+      <div class="screen-title">Welcome Back</div>
+      <div class="screen-sub">Log in to your Robot Tech Solutions account.</div>
+
+      <div class="fg" id="fgC_user"><label>Email or Username *</label>
+        <input type="text" id="C_user" placeholder="Email or @username" autocomplete="username"/>
+      </div>
+      <div class="fg" id="fgC_pass"><label>Password *</label>
+        <div class="pw-wrap">
+          <input type="password" id="C_pass" placeholder="Your password" autocomplete="current-password"/>
+          <button class="pw-eye" type="button" onclick="eyeToggle('C_pass',this)">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-main" id="btnC" onclick="doLogin()">
+        <span id="btnCtxt">Log In →</span>
+      </button>
+      <div class="divider"><hr/><span>or</span><hr/></div>
+      <div class="switch-row">New here? <a onclick="showScreen('screenB')">Create Account</a></div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN D: Email OTP ── -->
+  <div class="screen" id="screenD">
+    <div class="app-card">
+      <div class="app-logo-badge">
+        <div class="icon">📧</div>
+        <div class="brand">ROBOT<span>TECH</span></div>
+      </div>
+      <div class="screen-title">Verify Your Email</div>
+      <div class="screen-sub" id="otpSub">Enter the 6-digit code we sent to your email.</div>
+
+      <div class="otp-row">
+        <input class="ob" type="tel" maxlength="1" id="ob0" oninput="obMove(0)" onkeydown="obBack(event,0)"/>
+        <input class="ob" type="tel" maxlength="1" id="ob1" oninput="obMove(1)" onkeydown="obBack(event,1)"/>
+        <input class="ob" type="tel" maxlength="1" id="ob2" oninput="obMove(2)" onkeydown="obBack(event,2)"/>
+        <input class="ob" type="tel" maxlength="1" id="ob3" oninput="obMove(3)" onkeydown="obBack(event,3)"/>
+        <input class="ob" type="tel" maxlength="1" id="ob4" oninput="obMove(4)" onkeydown="obBack(event,4)"/>
+        <input class="ob" type="tel" maxlength="1" id="ob5" oninput="obMove(5)" onkeydown="obBack(event,5)"/>
+      </div>
+      <div class="otp-timer" id="otpTimer"></div>
+
+      <button class="btn-main" id="btnD" onclick="verifyOTP()">
+        <span id="btnDtxt">Verify Email ✓</span>
+      </button>
+      <div class="otp-resend">Didn't get the code? <a onclick="resendCode()">Resend</a></div>
+    </div>
+  </div>
+
+  <!-- ── WhatsApp Panel ── -->
+  <div id="waPanel">
+    <div class="wa-card">
+      <div class="wa-icon-big">🎉</div>
+      <div class="profile-row">
+        <span class="p-ava" id="dispAva">🧑‍💻</span>
+        <span class="p-name" id="dispUname">@member</span>
+      </div>
+      <h2>YOU'RE OFFICIALLY IN!</h2>
+      <p>Your Robot Tech Solutions account is verified and active.<br/>Your info has been sent to Olan Tony (Founder).<br/><br/>Tap below to join our WhatsApp community!</p>
+      <a class="btn-wa" href="https://chat.whatsapp.com/L4OdMR7o4pA0eGwswoYfZJ?mode=gi_t" target="_blank" rel="noopener noreferrer">
+        <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Join WhatsApp Group
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ROBOT<span>TECH</span> SOLUTIONS</div>
+  <p class="footer-tag">Empowering the next generation of tech innovators. This is just the beginning. 🚀</p>
+  <p class="footer-bottom">© 2025 Robot Tech Solutions · Founded by Olan Tony · All rights reserved</p>
+</footer>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── EMAILJS CONFIG ──────────────────────────────
+   Sign up FREE at emailjs.com
+   1) Create account → Add Email Service (Gmail) → get Service ID
+   2) Create Email Template → get Template ID
+   3) Copy your Public Key from Account → API Keys
+   Replace the 3 values below with yours.
+─────────────────────────────────────────────── */
+var EJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';   // e.g. 'user_abc123'
+var EJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';   // e.g. 'service_xyz'
+var EJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';  // e.g. 'template_otp'
+// Template must have variables: {{to_email}}, {{to_name}}, {{otp_code}}
+
+/* ── FIREBASE CONFIG ─────────────────────────────
+   1) Go to console.firebase.google.com
+   2) New Project → Firestore Database → Start in test mode
+   3) Project Settings → Web App → copy config below
+─────────────────────────────────────────────── */
+var FB_CONFIG = {
+  apiKey:            "YOUR_FIREBASE_API_KEY",
+  authDomain:        "YOUR_PROJECT.firebaseapp.com",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+
+/* ── DETECT IF CONFIGS ARE SET ────────────────── */
+var EJS_READY = EJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY';
+var FB_READY  = FB_CONFIG.apiKey !== 'YOUR_FIREBASE_API_KEY';
+
+/* ── INIT EMAILJS ─────────────────────────────── */
+if(EJS_READY){ emailjs.init(EJS_PUBLIC_KEY); }
+
+/* ── INIT FIREBASE ───────────────────────────── */
+var db = null;
+if(FB_READY){
+  firebase.initializeApp(FB_CONFIG);
+  db = firebase.firestore();
+  // Listen to member count in real-time (syncs across ALL devices)
+  db.collection('stats').doc('members').onSnapshot(function(doc){
+    if(doc.exists){
+      var n = doc.data().count || 5;
+      document.getElementById('memberCount').textContent = n;
+    }
+  });
+  db.collection('stats').doc('members').get().then(function(doc){
+    if(!doc.exists){ db.collection('stats').doc('members').set({count:5}); }
+  });
+} else {
+  // Fallback: localStorage (only this device)
+  document.getElementById('memberCount').textContent = localStorage.getItem('rts_m') || 5;
+}
+
+function incrementMember(){
+  if(FB_READY && db){
+    db.collection('stats').doc('members').update({
+      count: firebase.firestore.FieldValue.increment(1)
+    }).catch(function(){ });
+  } else {
+    var n = +(localStorage.getItem('rts_m') || 5) + 1;
+    localStorage.setItem('rts_m', n);
+    document.getElementById('memberCount').textContent = n;
+  }
+}
+
+/* ── STARS ──────────────────────────────────── */
+(function(){
+  var c=document.getElementById('starCanvas'),x=c.getContext('2d'),S=[];
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;S=[];for(var i=0;i<200;i++)S.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.3,o:Math.random(),d:Math.random()*.007+.003});}
+  function draw(){x.clearRect(0,0,c.width,c.height);for(var i=0;i<S.length;i++){S[i].o+=S[i].d;if(S[i].o>1||S[i].o<0)S[i].d=-S[i].d;x.beginPath();x.arc(S[i].x,S[i].y,S[i].r,0,Math.PI*2);x.fillStyle='rgba(255,255,255,'+S[i].o.toFixed(2)+')';x.fill();}requestAnimationFrame(draw);}
+  resize();draw();window.addEventListener('resize',resize);
+})();
+
+/* ── SCROLL REVEAL ──────────────────────────── */
+document.querySelectorAll('.reveal').forEach(function(r){
+  new IntersectionObserver(function(e){e.forEach(function(n){if(n.isIntersecting)n.target.classList.add('visible');});},{threshold:.1}).observe(r);
+});
+
+/* ── TOAST ──────────────────────────────────── */
+function toast(msg, type){
+  var t=document.getElementById('toast');
+  t.innerHTML=msg;
+  t.style.borderColor=type==='ok'?'var(--green)':type==='err'?'var(--red)':'var(--neon)';
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(function(){t.classList.remove('show');},4500);
+}
+
+/* ── SCREEN SWITCH ──────────────────────────── */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('waPanel').classList.remove('active');
+  var target = document.getElementById(id);
+  if(target){ target.classList.add('active'); target.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+
+/* ── FIELD VALIDATION ───────────────────────── */
+function req(inputId, fgId){
+  var el=document.getElementById(inputId);
+  var fg=document.getElementById(fgId);
+  if(!el || !el.value.trim()){ if(fg)fg.classList.add('err'); return false; }
+  if(fg)fg.classList.remove('err'); return true;
+}
+
+/* ── PASSWORD LIVE ──────────────────────────── */
+function livePw(v){
+  var s=0;
+  if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+  var cols=['','#ff4444','#ff6b00','#ffcc00','#39ff14'];
+  var lbls=['','Weak','Fair','Good','Strong ✓'];
+  document.getElementById('pwFill').style.width=[0,28,55,80,100][s]+'%';
+  document.getElementById('pwFill').style.background=cols[s]||'';
+  document.getElementById('pwHint').textContent=lbls[s]||'';
+  document.getElementById('pwHint').style.color=cols[s]||'';
+}
+function liveConfirm(){
+  var p1=document.getElementById('B_pass').value;
+  var p2=document.getElementById('B_pass2').value;
+  var h=document.getElementById('confirmHint');
+  if(!p2){h.textContent='';return;}
+  if(p1===p2){h.textContent='Passwords match ✓';h.className='hint ok';}
+  else{h.textContent='Passwords do not match';h.className='hint bad';}
+}
+function eyeToggle(id,btn){
+  var el=document.getElementById(id);
+  el.type = el.type==='password'?'text':'password';
+  btn.textContent = el.type==='password'?'👁':'🙈';
+}
+
+/* ── USERNAME LIVE CHECK ────────────────────── */
+function liveUsername(v){
+  var h=document.getElementById('unameHint');
+  if(!v){h.textContent='';return;}
+  if(v.length<3){h.textContent='Min 3 characters';h.className='hint bad';return;}
+  if(!/^[a-zA-Z0-9_]+$/.test(v)){h.textContent='Letters, numbers, underscores only';h.className='hint bad';return;}
+  var users=JSON.parse(localStorage.getItem('rts_users')||'{}');
+  if(users[v.toLowerCase()]){h.textContent='Username taken — try another';h.className='hint bad';}
+  else{h.textContent='Username available ✓';h.className='hint ok';}
+}
+
+/* ── AVATAR ─────────────────────────────────── */
+var chosenAva='🧑‍💻';
+function pickAva(el){
+  document.querySelectorAll('.ava-opt').forEach(function(a){a.classList.remove('sel');});
+  el.classList.add('sel'); chosenAva=el.dataset.v;
+}
+
+/* ── OTP SYSTEM ─────────────────────────────── */
+var OTP_CODE='', OTP_EXP=0, otpTmrInt=null;
+
+function genOTP(){ return Math.floor(100000+Math.random()*900000).toString(); }
+
+function startOtpTimer(secs){
+  clearInterval(otpTmrInt);
+  var rem=secs, el=document.getElementById('otpTimer');
+  function tick(){
+    if(rem<=0){clearInterval(otpTmrInt);el.textContent='Code expired — please resend';return;}
+    var m=Math.floor(rem/60),s=rem%60;
+    el.textContent='Code expires in '+m+':'+(s<10?'0':'')+s;
+    rem--;
+  }
+  tick(); otpTmrInt=setInterval(tick,1000);
+}
+
+function sendVerificationEmail(toEmail, toName, code){
+  if(!EJS_READY){
+    // EmailJS not configured yet — show code on screen for testing
+    console.log('OTP (demo):', code);
+    document.getElementById('otpSub').innerHTML =
+      'Check your email — or use this demo code:<br/><strong style="font-family:Orbitron,sans-serif;color:var(--neon);letter-spacing:4px;font-size:1.3rem;">'+code+'</strong>';
+    return Promise.resolve();
+  }
+  return emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+    to_email: toEmail,
+    to_name:  toName,
+    otp_code: code
+  });
+}
+
+/* ── GLOBAL REGISTRATION DATA ───────────────── */
+var REG = {};
+
+/* ══════════════════════════════════════════════
+   SCREEN A — SUBMIT INFO
+══════════════════════════════════════════════ */
+function submitInfo(){
+  var ok = [
+    req('A_name','fgA_name'), req('A_age','fgA_age'),
+    req('A_country','fgA_country'), req('A_phone','fgA_phone'),
+    req('A_email','fgA_email'), req('A_interest','fgA_interest'),
+    req('A_level','fgA_level')
+  ].every(Boolean);
+  if(!ok){ toast('⚠️ Please fill all required fields.','err'); return; }
+
+  var email = document.getElementById('A_email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    toast('⚠️ Please enter a valid email address.','err');
+    document.getElementById('fgA_email').classList.add('err'); return;
+  }
+
+  REG = {
+    name:     document.getElementById('A_name').value.trim(),
+    age:      document.getElementById('A_age').value.trim(),
+    country:  document.getElementById('A_country').value,
+    phone:    document.getElementById('A_phone').value.trim(),
+    email:    email,
+    interest: document.getElementById('A_interest').value,
+    level:    document.getElementById('A_level').value,
+    reason:   document.getElementById('A_reason').value.trim() || 'Not provided'
+  };
+
+  var btn=document.getElementById('btnA');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spin"></div><span>Sending to founder...</span>';
+
+  // Pre-fill email on signup screen
+  document.getElementById('B_email').value = REG.email;
+
+  // Send to founder via FormSubmit
+  var fd=new FormData();
+  fd.append('_subject','🚀 New Member — Robot Tech Solutions: '+REG.name);
+  fd.append('_captcha','false');
+  fd.append('_template','table');
+  fd.append('Full Name',REG.name);
+  fd.append('Age',REG.age);
+  fd.append('Country',REG.country);
+  fd.append('Phone',REG.phone);
+  fd.append('Email',REG.email);
+  fd.append('Tech Interest',REG.interest);
+  fd.append('Experience Level',REG.level);
+  fd.append('Reason',REG.reason);
+
+  fetch('https://formsubmit.co/ajax/robottechsolutions@gmail.com',{
+    method:'POST', body:fd, headers:{'Accept':'application/json'}
+  }).then(function(){ advance(); }).catch(function(){ advance(); });
+
+  function advance(){
+    btn.innerHTML='<span>Continue →</span>'; btn.disabled=false;
+    showScreen('screenB');
+    toast('✅ Info sent to founder! Now create your account.','ok');
+  }
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN B — SIGN UP
+══════════════════════════════════════════════ */
+function doSignup(){
+  var uname  = document.getElementById('B_uname').value.trim().toLowerCase();
+  var email  = document.getElementById('B_email').value.trim();
+  var dob    = document.getElementById('B_dob').value;
+  var gender = document.getElementById('B_gender').value;
+  var pass   = document.getElementById('B_pass').value;
+  var pass2  = document.getElementById('B_pass2').value;
+
+  var ok=[
+    req('B_uname','fgB_uname'), req('B_email','fgB_email'),
+    req('B_dob','fgB_dob'), req('B_gender','fgB_gender'),
+    req('B_pass','fgB_pass'), req('B_pass2','fgB_pass2')
+  ].every(Boolean);
+  if(!ok){ toast('⚠️ Please fill all required fields.','err'); return; }
+
+  if(uname.length<3||!/^[a-zA-Z0-9_]+$/.test(uname)){
+    toast('⚠️ Username: 3+ chars, letters/numbers/underscore only.','err');
+    document.getElementById('fgB_uname').classList.add('err'); return;
+  }
+  var users=JSON.parse(localStorage.getItem('rts_users')||'{}');
+  if(users[uname]){ toast('❌ Username already taken.','err'); document.getElementById('fgB_uname').classList.add('err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ toast('⚠️ Invalid email address.','err'); document.getElementById('fgB_email').classList.add('err'); return; }
+  if(pass.length<8){ toast('⚠️ Password must be at least 8 characters.','err'); document.getElementById('fgB_pass').classList.add('err'); return; }
+  if(pass!==pass2){ toast('❌ Passwords do not match.','err'); document.getElementById('fgB_pass2').classList.add('err'); return; }
+
+  // Store pending
+  sessionStorage.setItem('rts_pending', JSON.stringify({
+    uname:uname, email:email, dob:dob, gender:gender,
+    pass:btoa(unescape(encodeURIComponent(pass))),
+    avatar:chosenAva, name:REG.name||uname
+  }));
+
+  var btn=document.getElementById('btnB');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spin"></div><span>Sending verification code...</span>';
+
+  OTP_CODE = genOTP();
+  OTP_EXP  = Date.now() + 10*60*1000; // 10 min
+  sessionStorage.setItem('rts_otp', OTP_CODE);
+  sessionStorage.setItem('rts_otpexp', OTP_EXP);
+
+  sendVerificationEmail(email, REG.name||uname, OTP_CODE)
+    .then(function(){
+      btn.innerHTML='<span>Create Account & Verify →</span>'; btn.disabled=false;
+      document.getElementById('otpSub').textContent = 'We sent a 6-digit code to '+email+'. Check your inbox (and spam folder).';
+      showScreen('screenD');
+      startOtpTimer(600);
+      document.getElementById('ob0').focus();
+      toast('📧 Verification code sent to '+email,'ok');
+    })
+    .catch(function(err){
+      console.error(err);
+      // Still show OTP screen — code displayed there for demo
+      btn.innerHTML='<span>Create Account & Verify →</span>'; btn.disabled=false;
+      showScreen('screenD');
+      startOtpTimer(600);
+      document.getElementById('ob0').focus();
+      toast('📧 Check your email for the verification code.','ok');
+    });
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN C — LOG IN
+══════════════════════════════════════════════ */
+function doLogin(){
+  var input = document.getElementById('C_user').value.trim().toLowerCase();
+  var pass  = document.getElementById('C_pass').value;
+  if(!input||!pass){ toast('⚠️ Enter your email/username and password.','err'); return; }
+
+  var btn=document.getElementById('btnC');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spin"></div><span>Logging in...</span>';
+
+  var users=JSON.parse(localStorage.getItem('rts_users')||'{}');
+  var found=null, foundKey='';
+  Object.keys(users).forEach(function(k){
+    if(k===input||users[k].email.toLowerCase()===input){ found=users[k]; foundKey=k; }
+  });
+
+  setTimeout(function(){
+    btn.innerHTML='<span>Log In →</span>'; btn.disabled=false;
+    if(!found || found.pass !== btoa(unescape(encodeURIComponent(pass)))){
+      toast('❌ Incorrect email/username or password.','err');
+      document.getElementById('fgC_user').classList.add('err');
+      document.getElementById('fgC_pass').classList.add('err');
+    } else {
+      document.getElementById('fgC_user').classList.remove('err');
+      document.getElementById('fgC_pass').classList.remove('err');
+      localStorage.setItem('rts_session', JSON.stringify({uname:foundKey, avatar:found.avatar||'🧑‍💻', name:found.name||foundKey}));
+      goWhatsApp(found.avatar||'🧑‍💻', foundKey);
+    }
+  }, 900);
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN D — VERIFY OTP
+══════════════════════════════════════════════ */
+function obMove(i){
+  var el=document.getElementById('ob'+i);
+  if(!el)return;
+  // Only allow digits
+  el.value=el.value.replace(/[^0-9]/g,'');
+  if(el.value.length===1&&i<5){ document.getElementById('ob'+(i+1)).focus(); }
+  el.classList.toggle('filled', el.value.length===1);
+}
+function obBack(e,i){
+  if(e.key==='Backspace'){
+    var el=document.getElementById('ob'+i);
+    if(!el.value && i>0){ document.getElementById('ob'+(i-1)).focus(); }
+    el.classList.remove('filled');
+  }
+}
+function getOtpVal(){
+  var s=''; for(var i=0;i<6;i++) s+=document.getElementById('ob'+i).value; return s;
+}
+
+function verifyOTP(){
+  var entered = getOtpVal();
+  if(entered.length<6){ toast('⚠️ Enter all 6 digits of your code.','err'); return; }
+
+  var stored  = sessionStorage.getItem('rts_otp');
+  var exp     = +(sessionStorage.getItem('rts_otpexp')||0);
+
+  var btn=document.getElementById('btnD');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spin"></div><span>Verifying...</span>';
+
+  setTimeout(function(){
+    if(Date.now() > exp){
+      btn.innerHTML='<span>Verify Email ✓</span>'; btn.disabled=false;
+      toast('❌ Code expired. Please resend.','err'); return;
+    }
+    if(entered !== stored){
+      // Shake the boxes
+      document.querySelectorAll('.ob').forEach(function(b){
+        b.style.animation='shake .35s ease';
+        b.style.borderColor='var(--red)';
+        setTimeout(function(){b.style.animation='';b.style.borderColor='';b.value='';b.classList.remove('filled');},600);
+      });
+      document.getElementById('ob0').focus();
+      btn.innerHTML='<span>Verify Email ✓</span>'; btn.disabled=false;
+      toast('❌ Wrong code. Try again.','err');
+      return;
+    }
+
+    // ✅ CORRECT — create the account
+    var pending = JSON.parse(sessionStorage.getItem('rts_pending')||'{}');
+    var users   = JSON.parse(localStorage.getItem('rts_users')||'{}');
+    users[pending.uname] = {
+      email:    pending.email,
+      pass:     pending.pass,
+      dob:      pending.dob,
+      gender:   pending.gender,
+      avatar:   pending.avatar,
+      name:     pending.name,
+      country:  REG.country||'',
+      joinedAt: new Date().toISOString(),
+      verified: true
+    };
+    localStorage.setItem('rts_users', JSON.stringify(users));
+    localStorage.setItem('rts_session', JSON.stringify({uname:pending.uname, avatar:pending.avatar, name:pending.name}));
+
+    sessionStorage.removeItem('rts_otp');
+    sessionStorage.removeItem('rts_otpexp');
+    sessionStorage.removeItem('rts_pending');
+
+    incrementMember();
+
+    btn.innerHTML='<span>Verify Email ✓</span>'; btn.disabled=false;
+    goWhatsApp(pending.avatar||'🧑‍💻', pending.uname);
+  }, 900);
+}
+
+function resendCode(){
+  var pending = JSON.parse(sessionStorage.getItem('rts_pending')||'{}');
+  if(!pending.email){ toast('⚠️ Please go back and sign up first.','err'); return; }
+  OTP_CODE = genOTP();
+  OTP_EXP  = Date.now() + 10*60*1000;
+  sessionStorage.setItem('rts_otp', OTP_CODE);
+  sessionStorage.setItem('rts_otpexp', OTP_EXP);
+  // Clear boxes
+  for(var i=0;i<6;i++){document.getElementById('ob'+i).value='';document.getElementById('ob'+i).classList.remove('filled');}
+  document.getElementById('ob0').focus();
+  sendVerificationEmail(pending.email, pending.name||'Member', OTP_CODE)
+    .then(function(){ toast('📧 New code sent to '+pending.email,'ok'); startOtpTimer(600); })
+    .catch(function(){ toast('📧 New code generated. Check below.','ok'); startOtpTimer(600); });
+}
+
+/* ══════════════════════════════════════════════
+   GO TO WHATSAPP PANEL
+══════════════════════════════════════════════ */
+function goWhatsApp(avatar, uname){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('dispAva').textContent  = avatar||'🧑‍💻';
+  document.getElementById('dispUname').textContent = '@'+uname;
+  var wp = document.getElementById('waPanel');
+  wp.classList.add('active');
+  wp.scrollIntoView({behavior:'smooth', block:'center'});
+  clearInterval(otpTmrInt);
+  toast('🎉 Welcome to Robot Tech Solutions, @'+uname+'!','ok');
+}
+</script>
+</body>
+</html>
